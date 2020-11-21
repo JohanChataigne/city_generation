@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using System.Collections.Generic;
 using Delaunay;
 using Delaunay.Geo;
@@ -11,14 +12,15 @@ public class VoronoiDemo : MonoBehaviour
 	public GameObject building;
 	public GameObject skyscraper;
 	public GameObject house;
+	public NavMeshSurface surface;
     public const int NPOINTS = 100;
     public const int WIDTH = 1000;
     public const int HEIGHT = 1000;
 	public const float HOUSE_THRESHOLD = 0.85f;
 	public const float BUILDING_THRESHOLD = 0.97f;
-	public const float BUILDING_SIZE = 0.08f;
+	public const float BUILDING_SIZE = 0.05f;
+	public const int CENTER_RADIUS = 200;
 	public float freqx = 0.02f, freqy = 0.018f, offsetx = 0.43f, offsety = 0.22f;
-
     private List<Vector2> m_points;
 	private List<LineSegment> m_edges = null;
 	private List<LineSegment> m_spanningTree;
@@ -46,11 +48,17 @@ public class VoronoiDemo : MonoBehaviour
 		for (int i = 0; i < WIDTH; i++) {
             for (int j = 0; j < HEIGHT; j++) {
 				
-				int occ = (int) (100 * map[i, j]);
+				int x = i - WIDTH/2;
+				int y = j - HEIGHT/2;
 
-				for (int k = 0 ; k < occ ; k++) {
-					weighten_map.Add(new float[] {i, j});
+				if (x*x + y*y > CENTER_RADIUS*CENTER_RADIUS) {
+					int occ = (int) (100 * map[i, j]);
+
+					for (int k = 0 ; k < occ ; k++) {
+						weighten_map.Add(new float[] {i, j});
+					}
 				}
+				
 			}
 		}
 
@@ -66,16 +74,19 @@ public class VoronoiDemo : MonoBehaviour
 		float density = map[(int)x, (int)y];
 
 		if (density < HOUSE_THRESHOLD) {
-			GameObject h = Instantiate(house, new Vector3(y / WIDTH * 10 - 5, 0.05f, x / HEIGHT * 10 - 5), Quaternion.Euler(0, angle, 0));
-			h.transform.localScale = new Vector3(BUILDING_SIZE, BUILDING_SIZE, BUILDING_SIZE);
+			float height = BUILDING_SIZE;
+			GameObject h = Instantiate(house, new Vector3(y / WIDTH * 10 - 5, height/2, x / HEIGHT * 10 - 5), Quaternion.Euler(0, angle, 0));
+			h.transform.localScale = new Vector3(BUILDING_SIZE, height, BUILDING_SIZE);
 		}
 		else if (density < BUILDING_THRESHOLD) {
-			GameObject b = Instantiate(building, new Vector3(y / WIDTH * 10 - 5, density/4, x / HEIGHT * 10 - 5), Quaternion.Euler(0, angle, 0));
-			b.transform.localScale = new Vector3(BUILDING_SIZE, density/2, BUILDING_SIZE);
+			float height = density/4 + Random.Range(0.0f, BUILDING_SIZE * 2);
+			GameObject b = Instantiate(building, new Vector3(y / WIDTH * 10 - 5, height/2, x / HEIGHT * 10 - 5), Quaternion.Euler(0, angle, 0));
+			b.transform.localScale = new Vector3(BUILDING_SIZE, height, BUILDING_SIZE);
 		}
 		else {
-			GameObject s = Instantiate(skyscraper, new Vector3(y / WIDTH * 10 - 5, density/2, x / HEIGHT * 10 - 5), Quaternion.Euler(0, angle, 0));
-			s.transform.localScale = new Vector3(BUILDING_SIZE, density/2, BUILDING_SIZE);
+			float height = density/4 + Random.Range(0.0f, BUILDING_SIZE * 3);
+			GameObject s = Instantiate(skyscraper, new Vector3(y / WIDTH * 10 - 5, height, x / HEIGHT * 10 - 5), Quaternion.Euler(0, angle, 0));
+			s.transform.localScale = new Vector3(BUILDING_SIZE, height, BUILDING_SIZE);
 		}
 	}
 
@@ -85,10 +96,31 @@ public class VoronoiDemo : MonoBehaviour
 		List<float[]> weighten_map = weightenMap(map);
         Color[] pixels = createPixelMap(map);
 
-        /* Create random points points */
-		
 		m_points = new List<Vector2> ();
 		List<uint> colors = new List<uint> ();
+
+		/* Create circle points */
+
+		/* center */
+		colors.Add((uint)0);
+		m_points.Add(new Vector2(WIDTH/2, HEIGHT/2));
+
+		/* circle */
+		for (int i = 0; i < WIDTH; i++) {
+			for (int j = 0; j < HEIGHT; j++) {
+
+				int x = i - WIDTH/2;
+				int y = j - HEIGHT/2;
+
+				if (x*x + y*y == CENTER_RADIUS*CENTER_RADIUS) {
+					colors.Add ((uint)0);
+					Vector2 vec = new Vector2(i, j); 
+					m_points.Add (vec);
+				}
+			}
+		}
+
+        /* Create random points points */
 		for (int i = 0; i < NPOINTS; i++) {
 			colors.Add ((uint)0);
 			float[] rnd_coord = weighten_map[(int) Random.Range(0, weighten_map.Count)];
@@ -118,16 +150,6 @@ public class VoronoiDemo : MonoBehaviour
 
 		/* Create buildings */
 
-		/* Create 1 building for each cell in heatmap */
-		/*
-		for (int i = 0; i < m_points.Count; i++) {
-
-			float x = m_points[i].x;
-			float y = m_points[i].y;
-			createBuildings(x, y, map);
-			
-		}*/
-
 		/* Create buildings next to roads */
 		for (int i = 0; i < m_edges.Count; i++) {
 			LineSegment seg = m_edges [i];	
@@ -138,28 +160,23 @@ public class VoronoiDemo : MonoBehaviour
 			Vector2 segment = (right - left) / WIDTH * 100;
 			float road_angle = Vector2.SignedAngle(Vector2.right, segment);
 
-			if(segment.magnitude > 1) {
+			int nb_building = (int)segment.magnitude;
 
-				int nb_building = (int)segment.magnitude;
+			Vector2 ortho = Vector2.Perpendicular(segment);
+			ortho.Normalize();
 
-				Vector2 ortho = Vector2.Perpendicular(segment);
-				ortho.Normalize();
+			for (int k = 1; k < nb_building ; k++) {
 
-				for (int k = 1; k < nb_building ; k++) {
+				float x = left.x + segment.x * WIDTH / 100 * (k * 1.0f/nb_building);
+				float y = left.y + segment.y * WIDTH / 100 * (k * 1.0f/nb_building);
+				createBuildings(x + 10*ortho.x, y + 10*ortho.y, road_angle, map);
+				createBuildings(x + -10*ortho.x, y + -10*ortho.y, road_angle, map);
+			}	
 
-					float x = left.x + segment.x * WIDTH / 100 * (k * 1.0f/nb_building);
-					float y = left.y + segment.y * WIDTH / 100 * (k * 1.0f/nb_building);
-					createBuildings(x + 10*ortho.x, y + 10*ortho.y, road_angle, map);
-					createBuildings(x + -10*ortho.x, y + -10*ortho.y, road_angle, map);
-				}
-
-				//float middle_x = (left.x + right.x) / 2;
-				//float middle_y = (left.y + right.y) / 2;
-				/* create buildings with road angle */
-				//createBuildings(middle_x + ortho.x, middle_y + ortho.y, road_angle, map);
-				//createBuildings(middle_x - 10*ortho.x, middle_y - 10*ortho.y, road_angle, map);		
-			}
 		}
+
+		/* build navmesh */
+		surface.BuildNavMesh();
 
 		/* Shows Delaunay triangulation */
 		/*
@@ -192,7 +209,6 @@ public class VoronoiDemo : MonoBehaviour
 		tx.Apply ();*/
 
 	}
-
 
 
     /* Functions to create and draw on a pixel array */
