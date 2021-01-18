@@ -10,8 +10,8 @@ public class sensor : MonoBehaviour
     void OnTriggerEnter(Collider other) {
         
         if (forbidden_collisions.Contains(other.gameObject.name)) {
-            //Debug.Log(gameObject.name + " got triggered by " + other.gameObject.name);
-            Destroy(gameObject.transform.parent.gameObject);
+            Debug.Log(gameObject.name + " got triggered by " + other.gameObject.name);
+            //Destroy(gameObject.transform.parent.gameObject);
         }
         
         
