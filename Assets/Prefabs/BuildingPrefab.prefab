@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3738011178364769880}
+  - component: {fileID: 6700811291625193422}
   m_Layer: 0
   m_Name: BuildingPrefab
   m_TagString: Untagged
@@ -31,6 +32,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6700811291625193422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 524414558549756143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef2cf4fa1551df348a84cc06f947f82f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  capacity: 0
+  nb_inhabitants: 0
+  window: {fileID: 3114423855634171260, guid: 899a608bdffe9794baca63a6e0f5052c, type: 3}
+  window_dim: {x: 0.01, y: 0.05, z: 0.05}
+  m_windows: []
+  is_habitation: 0
 --- !u!1 &1974132998052185523
 GameObject:
   m_ObjectHideFlags: 0
@@ -45,7 +64,7 @@ GameObject:
   - component: {fileID: 1707624060809324901}
   - component: {fileID: 4461679552942764705}
   - component: {fileID: 4159556983315899134}
-  - component: {fileID: 6016186229432756467}
+  - component: {fileID: 4171372061994479431}
   m_Layer: 0
   m_Name: Building
   m_TagString: Untagged
@@ -152,22 +171,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 1974132998052185523}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18b4811a270a5facd9f3c707eb318fe2, type: 3}
+  m_Script: {fileID: 11500000, guid: 97011d984d378144f92e37e58e169b0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6016186229432756467
-MonoBehaviour:
+--- !u!208 &4171372061994479431
+NavMeshObstacle:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1974132998052185523}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_OverrideArea: 1
-  m_Area: 1
-  m_IgnoreFromBuild: 0
-  m_AffectedAgents: ffffffff
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5

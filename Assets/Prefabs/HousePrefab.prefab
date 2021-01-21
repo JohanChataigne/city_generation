@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7385362018631330001}
   - component: {fileID: 645914931578622873}
   - component: {fileID: 2694374664534131834}
-  - component: {fileID: 3379562097638239703}
+  - component: {fileID: 2655539746180071620}
   m_Layer: 0
   m_Name: House
   m_TagString: Untagged
@@ -121,25 +121,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 1112128496943966637}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18b4811a270a5facd9f3c707eb318fe2, type: 3}
+  m_Script: {fileID: 11500000, guid: 97011d984d378144f92e37e58e169b0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3379562097638239703
-MonoBehaviour:
+--- !u!208 &2655539746180071620
+NavMeshObstacle:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1112128496943966637}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_OverrideArea: 1
-  m_Area: 1
-  m_IgnoreFromBuild: 0
-  m_AffectedAgents: ffffffff
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &8538619748655628601
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,6 +149,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8538619748655628600}
+  - component: {fileID: 5058648659213225798}
   m_Layer: 0
   m_Name: HousePrefab
   m_TagString: Untagged
@@ -171,3 +172,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5058648659213225798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8538619748655628601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef2cf4fa1551df348a84cc06f947f82f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  capacity: 0
+  nb_inhabitants: 0
+  window: {fileID: 3114423855634171260, guid: 899a608bdffe9794baca63a6e0f5052c, type: 3}
+  window_dim: {x: 0.01, y: 0.05, z: 0.05}
+  m_windows: []
+  is_habitation: 0
